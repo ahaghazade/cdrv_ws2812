@@ -96,7 +96,8 @@ typedef struct {
 /* Exported functions prototypes ---------------------------------------------*/
 ws2812_res_t fWs2812_Init(sWs2812 * const me);
 void fWs2812_Run(sWs2812 * const me);
-void fWs2812_DeInit(sWs2812 * const me);
+void fWs2812_SetBrightness(sWs2812 * const me);
+
 
 /* Exported variables --------------------------------------------------------*/
 

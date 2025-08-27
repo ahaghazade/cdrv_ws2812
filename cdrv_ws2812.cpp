@@ -71,7 +71,6 @@ ws2812_res_t fWs2812_Init(sWs2812 * const me) {
 
 void fWs2812_Run(sWs2812 * const me) {
 
-
     if (me == NULL || !me->Init || me->_pLeds == NULL) {
         return;
     }
@@ -105,6 +104,16 @@ void fWs2812_Run(sWs2812 * const me) {
         default:
             break;
     }
+}
+
+/**
+ * @brief 
+ * 
+ * @param me 
+ */
+void fWs2812_SetBrightness(sWs2812 * const me) {
+
+    FastLED.setBrightness((me->Brightness * 255) / 100);
 }
 
 /*
