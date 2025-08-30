@@ -32,14 +32,6 @@ extern "C" {
 
 /* Exported defines ----------------------------------------------------------*/
 /**
- * @brief Default data pin for WS2812 (must be defined at compile time)
- * 
- */
-#ifndef WS2812_DATA_PIN
-#define WS2812_DATA_PIN 19
-#endif
-
-/**
  * @brief Return codes for WS2812 operations
  * 
  */
@@ -90,13 +82,16 @@ typedef struct {
 
     bool Init;                     // Initialization status
 
+    uint8_t DataPin;  
+
 } sWs2812;
 
 /* Exported constants --------------------------------------------------------*/
 /* Exported functions prototypes ---------------------------------------------*/
 ws2812_res_t fWs2812_Init(sWs2812 * const me);
 void fWs2812_Run(sWs2812 * const me);
-void fWs2812_DeInit(sWs2812 * const me);
+void fWs2812_SetBrightness(sWs2812 * const me);
+
 
 /* Exported variables --------------------------------------------------------*/
 
