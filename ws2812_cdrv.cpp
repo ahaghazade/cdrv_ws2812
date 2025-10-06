@@ -134,6 +134,7 @@ void fWs2812_Run(sWs2812 * const me) {
 void fWs2812_SetBrightness(sWs2812 * const me) {
 
     FastLED.setBrightness((me->Brightness * 255) / 100);
+    FastLED.show();
 }
 
 /*
