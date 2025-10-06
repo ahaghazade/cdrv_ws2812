@@ -1,6 +1,6 @@
 /**
 ******************************************************************************
-* @file           : cdrv_ws2812.h
+* @file           : ws2812_cdrv.h
 * @brief          : Header file for WS2812 LED driver
 * @note           :
 * @copyright      : COPYRIGHT© 2025 DiodeGroup
@@ -20,8 +20,8 @@
 */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef CDRV_WS2812_H
-#define CDRV_WS2812_H
+#ifndef WS2812_CDRV_H
+#define WS2812_CDRV_H
 
 /* Includes ------------------------------------------------------------------*/
 #include <FastLED.h>
@@ -99,6 +99,6 @@ void fWs2812_SetBrightness(sWs2812 * const me);
 }
 #endif
 
-#endif /* CDRV_WS2812_H */
+#endif /* WS2812_CDRV_H */
 
 /************************ © COPYRIGHT DiodeGroup *****END OF FILE****/
