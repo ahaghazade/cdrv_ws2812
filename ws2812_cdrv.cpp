@@ -82,7 +82,7 @@ ws2812_res_t fWs2812_Init(sWs2812 * const me) {
         default:
             return WS2812_RES_ERROR_INIT_FAIL;
     }
-    FastLED.setBrightness((me->Brightness * 255) / 100);
+    FastLED.setBrightness(int(me->Brightness));
 
     me->Init = true;
 
@@ -133,7 +133,7 @@ void fWs2812_Run(sWs2812 * const me) {
  */
 void fWs2812_SetBrightness(sWs2812 * const me) {
 
-    FastLED.setBrightness(int(me->Brightness * 2.55));
+    FastLED.setBrightness(int(me->Brightness));
     FastLED.show();
 }
 
@@ -229,15 +229,15 @@ void fWs2813_LinearColorWithErase(CRGB Color, int LedNums, bool CW, CRGB leds[])
  */
 void fWs2813_BlinkColor(CRGB Color, int LedNums, uint32_t delay_ms, int replication, CRGB leds[])
 {
-    // for(int rep = 0; rep < replication; rep++)
-    // {
+    for(int rep = 0; rep < replication; rep++)
+    {
         fWs2813_FullColor(Color, LedNums, leds);
         FastLED.show();
         delay(delay_ms);
         fWs2813_FullColor(CRGB::Black, LedNums, leds);
         FastLED.show();
         delay(delay_ms);
-    // }
+    }
 }
 
 /**
@@ -252,8 +252,8 @@ void fWs2813_BlinkColor(CRGB Color, int LedNums, uint32_t delay_ms, int replicat
 void fWs2813_BlinkColorSmooth(CRGB Color, int LedNums, int replication, int Smooth, CRGB leds[])
 {
     float Percent = 1 / float(Smooth);
-    // for(int rep = 0; rep < replication; rep++)
-    // {
+    for(int rep = 0; rep < replication; rep++)
+    {
         for(int j = 0; j <= Smooth; j++)
         {
             for(int i = 0; i < LedNums; i++)
@@ -295,7 +295,7 @@ void fWs2813_BlinkColorSmooth(CRGB Color, int LedNums, int replication, int Smoo
             FastLED.show();
             delay(400/Smooth);
         }
-    // }
+    }
 }
 
 /**
