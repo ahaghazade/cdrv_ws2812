@@ -55,7 +55,12 @@ ws2812_res_t fWs2812_Init(sWs2812 * const me) {
     }
 
     // Allocate memory for LEDs using C-style malloc
-    me->_pLeds = (CRGB *)malloc(me->LedNum * sizeof(CRGB));
+    me->_pLeds = (CRGB*) heap_caps_malloc(
+      me->LedNum * sizeof(CRGB),
+      MALLOC_CAP_8BIT | MALLOC_CAP_DMA
+    );
+
+    // me->_pLeds = (CRGB *)malloc(me->LedNum * sizeof(CRGB));
     if (me->_pLeds == NULL) {
         return WS2812_RES_ERROR_INIT_FAIL;
     }
@@ -84,6 +89,7 @@ ws2812_res_t fWs2812_Init(sWs2812 * const me) {
     }
     FastLED.setBrightness(int(me->Brightness));
 
+    me->IsUpdating = false;
     me->Init = true;
 
     return WS2812_RES_OK;
@@ -97,32 +103,71 @@ void fWs2812_Run(sWs2812 * const me) {
 
     switch (me->Effect) {
 
-        case FillColor:
+        case FillColor: {
+
+            me->IsUpdating = true;
             fWs2813_FullColor(me->Color, me->LedNum, me->_pLeds);
+            me->IsUpdating = false;
+            me->Color = me->MainColor;
             break;
-        
-        case LinearFill:
+        }
+
+        case LinearFill: {
+
+            me->IsUpdating = true;
             fWs2813_LinearColorFill(me->Color, me->LedNum, me->_pLeds);
+            me->IsUpdating = false;
+            me->Effect = FillColor;
+            me->Color = me->MainColor;
             break;
-        
-        case LinearFillWithErase:
+        }
+
+        case LinearFillWithErase: {
+
+            me->IsUpdating = true;
             fWs2813_LinearColorWithErase(me->Color, me->LedNum, true, me->_pLeds);
+            me->IsUpdating = false;
+            me->Effect = FillColor;
+            me->Color = me->MainColor;
             break;
-        
-        case Blink:
+        }
+
+        case Blink: {
+
+            me->IsUpdating = true;
             fWs2813_BlinkColor(me->Color, me->LedNum, me->BetweanEffectDelayMs, 3, me->_pLeds);
+            me->IsUpdating = false;
+            me->Effect = FillColor;
+            me->Color = me->MainColor;
             break;
-        
-        case BlinkSmooth:
+        }
+
+        case BlinkSmooth: {
+            
+            me->IsUpdating = true;
             fWs2813_BlinkColorSmooth(me->Color, me->LedNum, 3, 10, me->_pLeds);
+            me->IsUpdating = false;
+            me->Effect = FillColor;
+            me->Color = me->MainColor;
             break;
-        
-        case Fancy:
+        }
+
+        case Fancy: {
+
+            me->IsUpdating = true;
             fWs2813_Fancy(me->Color, me->LedNum, me->_pLeds);
+            me->IsUpdating = false;
+            me->Effect = FillColor;
+            me->Color = me->MainColor;
             break;
-        
-        default:
+        }
+
+        default: {
+
+            me->Effect = FillColor;
+            me->Color = me->MainColor;
             break;
+        }
     }
 }
 
@@ -181,7 +226,7 @@ void fWs2813_LinearColorFill(CRGB Color, int LedNums, CRGB leds[])
             }
         }
         FastLED.show();
-        delay(35);
+        vTaskDelay(pdMS_TO_TICKS(35));
     }  
 }
 
@@ -203,7 +248,7 @@ void fWs2813_LinearColorWithErase(CRGB Color, int LedNums, bool CW, CRGB leds[])
         {
             leds[i] = CRGB::Black;
             FastLED.show();
-            delay(35);
+            vTaskDelay(pdMS_TO_TICKS(35));
         }
     }
     if(!CW)
@@ -212,7 +257,7 @@ void fWs2813_LinearColorWithErase(CRGB Color, int LedNums, bool CW, CRGB leds[])
         {
             leds[i] = CRGB::Black;
             FastLED.show();
-            delay(35);
+            vTaskDelay(pdMS_TO_TICKS(35));
         }
     }
 
@@ -233,10 +278,10 @@ void fWs2813_BlinkColor(CRGB Color, int LedNums, uint32_t delay_ms, int replicat
     {
         fWs2813_FullColor(Color, LedNums, leds);
         FastLED.show();
-        delay(delay_ms);
+        vTaskDelay(pdMS_TO_TICKS(delay_ms));
         fWs2813_FullColor(CRGB::Black, LedNums, leds);
         FastLED.show();
-        delay(delay_ms);
+        vTaskDelay(pdMS_TO_TICKS(delay_ms));
     }
 }
 
@@ -272,9 +317,9 @@ void fWs2813_BlinkColorSmooth(CRGB Color, int LedNums, int replication, int Smoo
                 }
             }  
             FastLED.show();
-            delay(400/Smooth);
+            vTaskDelay(pdMS_TO_TICKS(400/Smooth));
         }
-        delay(200);
+        vTaskDelay(pdMS_TO_TICKS(200));
         for(int j = Smooth; j >= 0; j--)
         {
             for(int i = 0; i < LedNums; i++)
@@ -293,7 +338,7 @@ void fWs2813_BlinkColorSmooth(CRGB Color, int LedNums, int replication, int Smoo
                 }
             }  
             FastLED.show();
-            delay(400/Smooth);
+            vTaskDelay(pdMS_TO_TICKS(400/Smooth));
         }
     }
 }
@@ -322,7 +367,7 @@ void fWs2813_Fancy(CRGB Color, int LedNums, CRGB leds[])
             leds[LedNums - j - i - 1].b = Color.b * 1;
         }
         FastLED.show();
-        delay(35);
+        vTaskDelay(pdMS_TO_TICKS(35));
     }
     delay(80);
     for(int i = 0; i < LedNums/2 - LedPairs / 2; i++)//leds from center to sides
@@ -339,9 +384,9 @@ void fWs2813_Fancy(CRGB Color, int LedNums, CRGB leds[])
             leds[LedNums/2 + i + j].b = Color.b * 1;
         }
         FastLED.show();
-        delay(35);
+        vTaskDelay(pdMS_TO_TICKS(35));
     }
-    delay(80);
+    vTaskDelay(pdMS_TO_TICKS(80));
     for(int i = 0; i < LedNums/2 - LedPairs / 2; i++)//leds from sides to center half
     {
         for(int j = 0; j < LedPairs; j++)
@@ -355,9 +400,9 @@ void fWs2813_Fancy(CRGB Color, int LedNums, CRGB leds[])
             leds[LedNums - j - i - 1].b = Color.b * 0.3;
         }
         FastLED.show();
-        delay(40);
+        vTaskDelay(pdMS_TO_TICKS(40));
     }
-    delay(100);
+    vTaskDelay(pdMS_TO_TICKS(100));
     for(int i = 0; i < LedNums/2 - LedPairs / 2; i++)//leds from center to sides full
     {
         for(int j = 0; j < LedPairs; j++)
@@ -371,7 +416,7 @@ void fWs2813_Fancy(CRGB Color, int LedNums, CRGB leds[])
             leds[LedNums/2 + i + j].b = Color.b * 1;
         }
         FastLED.show();
-        delay(40);
+        vTaskDelay(pdMS_TO_TICKS(40));
     }
 }
 

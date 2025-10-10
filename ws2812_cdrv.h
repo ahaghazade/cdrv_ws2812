@@ -60,7 +60,7 @@ typedef enum {
 
     Fancy    
 
-} eWs2812;
+}eWs2812;
 
 /**
  * @brief WS2812 configuration structure
@@ -80,11 +80,15 @@ typedef struct {
 
     CRGB Color;
 
+    CRGB MainColor;
+
     bool Init;                     // Initialization status
 
-    uint8_t DataPin;  
+    uint8_t DataPin;
 
-} sWs2812;
+    bool IsUpdating;
+
+}sWs2812;
 
 /* Exported constants --------------------------------------------------------*/
 /* Exported functions prototypes ---------------------------------------------*/
