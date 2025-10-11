@@ -155,6 +155,12 @@ void fWs2812_Run(sWs2812 * const me) {
         case Fancy: {
 
             me->IsUpdating = true;
+            me->Color = CRGB::Black;
+            fWs2813_FullColor(me->Color, me->LedNum, me->_pLeds);
+            me->IsUpdating = false;
+
+            me->IsUpdating = true;
+            me->Color = CRGB::Green;
             fWs2813_Fancy(me->Color, me->LedNum, me->_pLeds);
             me->IsUpdating = false;
             me->Effect = FillColor;
